@@ -2,25 +2,26 @@ name: Vaultwarden Backup
 
 on:
   schedule:
-    - cron: '*/60 * * * *' # new: every 60 minutes
-  workflow_dispatch:     # Allow manual runs too
+    - cron: '0 * * * *'  # Every hour
+  workflow_dispatch:
 
 jobs:
   backup:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       BACKUP_REPO: https://x-access-token:${{ secrets.BACKUP_TOKEN }}@github.com/jsgillhq/vaultwarden-backup.git
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Install Git
-      run: sudo apt-get update && sudo apt-get install -y git
+      - name: Install Git
+        run: sudo apt-get update && sudo apt-get install -y git
 
-    - name: Run backup.sh
-      run: |
-        chmod +x ./backup.sh
-        ./backup.sh
+      - name: Run backup.sh
+        run: |
+          chmod +x ./backup.sh
+          ./backup.sh
