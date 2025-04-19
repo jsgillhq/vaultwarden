@@ -4,9 +4,11 @@ set -e
 # Settings
 BACKUP_REPO="https://x-access-token:${GITHUB_TOKEN}@github.com/jsgillhq/vaultwarden-backup.git"
 BACKUP_DIR="/data"
-LOG_FILE="/data/restore.log"
+LOG_FILE="$BACKUP_DIR/restore.log"
 RESTORE_TMP="/tmp/vaultwarden-backup"
 LATEST_FILE=""
+
+mkdir -p "$BACKUP_DIR"
 
 # Only restore if db doesn't exist
 if [ -f "$BACKUP_DIR/db.sqlite3" ]; then
@@ -17,14 +19,17 @@ fi
 # Clone backup repo
 echo "🌀 Cloning backup repo..." | tee -a "$LOG_FILE"
 rm -rf "$RESTORE_TMP"
-git clone --depth=1 "$BACKUP_REPO" "$RESTORE_TMP"
+git clone --depth=1 "$BACKUP_REPO" "$RESTORE_TMP" 2>>"$LOG_FILE" || {
+  echo "❌ Failed to clone backup repo!" | tee -a "$LOG_FILE"
+  exit 1
+}
 
 # Find the latest backup file
 LATEST_FILE=$(find "$RESTORE_TMP" -type f -name "*.sqlite3" | sort | tail -n 1)
 
 if [ -z "$LATEST_FILE" ]; then
   echo "❌ No backup found to restore!" | tee -a "$LOG_FILE"
-  
+
   # Optional: send Slack notification on failure
   if [ -n "$SLACK_WEBHOOK" ]; then
     curl -X POST -H 'Content-type: application/json' \
