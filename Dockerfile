@@ -204,4 +204,4 @@ RUN chmod +x /restore.sh
 
 HEALTHCHECK --interval=60s --timeout=10s CMD ["/healthcheck.sh"]
 
-CMD ["/bin/bash", "-c", "/restore.sh && /start.sh"]
+CMD ["/bin/bash", "-c", "find / -name db.sqlite3 2>/dev/null; /start.sh"]
