@@ -180,6 +180,7 @@ RUN mkdir /data && \
         --no-install-recommends \
         ca-certificates \
         curl \
+        git \
         libmariadb-dev-compat \
         libpq5 \
         openssl && \
