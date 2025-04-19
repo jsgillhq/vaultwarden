@@ -199,9 +199,13 @@ COPY docker/healthcheck.sh docker/start.sh /
 COPY --from=vault /web-vault ./web-vault
 COPY --from=build /app/target/final/vaultwarden .
 
-# Temporarily disable restore.sh to allow successful deployment
+# Skip restore.sh for now, just debug the DB location
 # COPY restore.sh /restore.sh
 # RUN chmod +x /restore.sh
+
+# TEMP DEBUG: Locate db.sqlite3 inside the container
+RUN echo "🕵️  Searching for db.sqlite3..." && \
+    find / -name "db.sqlite3" 2>/dev/null || echo "❌ db.sqlite3 not found"
 
 HEALTHCHECK --interval=60s --timeout=10s CMD ["/healthcheck.sh"]
 
