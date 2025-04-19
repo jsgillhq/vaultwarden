@@ -1,3 +1,4 @@
+# Trigger rebuild to include restore.sh
 # syntax=docker/dockerfile:1
 # check=skip=FromPlatformFlagConstDisallowed,RedundantTargetPlatform
 
