@@ -1,1 +1,1 @@
-FROM vaultwarden/server:latest
+docker/Dockerfile.debian
