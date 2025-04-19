@@ -2,7 +2,7 @@ name: Vaultwarden Backup
 
 on:
   schedule:
-    - cron: '0 2 * * *' # Runs daily at 2am UTC
+    - cron: '*/60 * * * *' # new: every 60 minutes
   workflow_dispatch:     # Allow manual runs too
 
 jobs:
