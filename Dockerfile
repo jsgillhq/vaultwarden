@@ -199,9 +199,10 @@ COPY docker/healthcheck.sh docker/start.sh /
 COPY --from=vault /web-vault ./web-vault
 COPY --from=build /app/target/final/vaultwarden .
 
-COPY restore.sh /restore.sh
-RUN chmod +x /restore.sh
+# Temporarily disable restore.sh to allow successful deployment
+# COPY restore.sh /restore.sh
+# RUN chmod +x /restore.sh
 
 HEALTHCHECK --interval=60s --timeout=10s CMD ["/healthcheck.sh"]
 
-CMD ["/bin/bash", "-c", "/restore.sh && /start.sh"]
+CMD ["/start.sh"]
