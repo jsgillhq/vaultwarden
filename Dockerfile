@@ -197,9 +197,9 @@ COPY docker/healthcheck.sh docker/start.sh /
 COPY --from=vault /web-vault ./web-vault
 COPY --from=build /app/target/final/vaultwarden .
 
-# Copy restore script into runtime container
 COPY restore.sh /restore.sh
 RUN chmod +x /restore.sh
 
-# Updated CMD to run restore before Vaultwarden
+HEALTHCHECK --interval=60s --timeout=10s CMD ["/healthcheck.sh"]
+
 CMD ["/bin/bash", "-c", "/restore.sh && /start.sh"]
