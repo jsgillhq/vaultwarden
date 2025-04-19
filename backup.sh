@@ -6,27 +6,33 @@ TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
 DATE_FOLDER=$(date +"%Y-%m-%d")
 BACKUP_FILE="db-${TIMESTAMP}.sqlite3"
 
-# Path to store the backup (e.g. 2025-04-19/db-2025-04-19_14-30-00.sqlite3)
+# Path to store the backup
 DEST_FOLDER="/tmp/vaultwarden-backup/${DATE_FOLDER}"
 mkdir -p "$DEST_FOLDER"
 
-# Create backup file
+# Check if the DB exists
+if [ ! -f /data/db.sqlite3 ]; then
+  echo "⚠️  No DB file found at /data/db.sqlite3. Skipping backup."
+  exit 0
+fi
+
+# Copy the database to backup folder
 cp /data/db.sqlite3 "${DEST_FOLDER}/${BACKUP_FILE}"
 
-# Clone backup repo
+# Clone the backup repo
 cd /tmp
-git clone https://x-access-token:${GITHUB_TOKEN}@github.com/jsgillhq/vaultwarden-backup.git
+git clone "https://x-access-token:${GITHUB_TOKEN}@github.com/jsgillhq/vaultwarden-backup.git"
 cd vaultwarden-backup
 
-# Copy the new backup folder into the repo
-cp -r "/tmp/vaultwarden-backup/${DATE_FOLDER}" .
+# Copy new backup in
+cp -r "${DEST_FOLDER}" .
 
-# Prune folders older than 7 days
-find . -maxdepth 1 -type d -name "20*" -mtime +7 -exec git rm -rf {} \;
+# Prune backups older than 7 days
+find . -maxdepth 1 -type d -name "20*" -mtime +7 -exec rm -rf {} \;
 
-# Git add, commit, push
-git add .
+# Commit and push
 git config user.name "Vaultwarden Backup Bot"
 git config user.email "bot@vaultwarden.local"
-git commit -m "Backup on $TIMESTAMP"
+git add .
+git commit -m "Backup on ${TIMESTAMP}" || echo "Nothing to commit"
 git push origin main
